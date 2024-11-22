@@ -2,8 +2,7 @@ import random
 
 import pytest
 import requests
-import allure
-import uuid
+
 
 
 
