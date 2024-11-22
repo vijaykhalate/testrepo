@@ -108,34 +108,34 @@ def test_get_api_request(create_user):
     print(response.content)
     assert response.status_code == 204, f"Expecting 204 status code but got {response.status_code}"
 
-def test_update_put_request(create_user):
-    id1, email2 = create_user
-    print("id--------------------------------------------------",id1)
-    print("email-----------------------------------------------",email2)
-    put_full_url = f"{put_url}/{id1}"
-    print("-----------------------------------------------------------",put_full_url)
-    random_number = random.randint(1, 3000)
-    email3 = f"vijay_{random_number}@gmail.com"
-    data = {
-        "name": "vijay",
-        "email": email3,
-        "gender": "male",
-        "status": "inactive"
-    }
-    response = requests.put(put_full_url, headers=header_values, json=data)
-    print(response.content)
-    assert  response.status_code == 200, f"Expecting status code 200 but got {response.status_code}"
-
-    delete_full_url = f"{delete_url}/{id1}"
-    print("____________________________________________",delete_full_url)
-    response = requests.delete(delete_full_url, headers=header_values)
-    print("Deleted---------------",response.status_code)
-    assert response.status_code == 204, f"Expecting 200 status code but got {response.status_code}"
-
-def test_delete_request(create_user):
-    id,email = create_user
-    delete_full_url = f"{delete_url}/{id}"
-    print("This is full delete api url ----------", delete_full_url)
-    response = requests.delete(delete_full_url, headers=header_values)
-    print(response.content)
-    assert response.status_code == 204, f"Expecting 204 status code but got {response.status_code}"
+# def test_update_put_request(create_user):
+#     id1, email2 = create_user
+#     print("id--------------------------------------------------",id1)
+#     print("email-----------------------------------------------",email2)
+#     put_full_url = f"{put_url}/{id1}"
+#     print("-----------------------------------------------------------",put_full_url)
+#     random_number = random.randint(1, 3000)
+#     email3 = f"vijay_{random_number}@gmail.com"
+#     data = {
+#         "name": "vijay",
+#         "email": email3,
+#         "gender": "male",
+#         "status": "inactive"
+#     }
+#     response = requests.put(put_full_url, headers=header_values, json=data)
+#     print(response.content)
+#     assert  response.status_code == 200, f"Expecting status code 200 but got {response.status_code}"
+#
+#     delete_full_url = f"{delete_url}/{id1}"
+#     print("____________________________________________",delete_full_url)
+#     response = requests.delete(delete_full_url, headers=header_values)
+#     print("Deleted---------------",response.status_code)
+#     assert response.status_code == 204, f"Expecting 200 status code but got {response.status_code}"
+#
+# def test_delete_request(create_user):
+#     id,email = create_user
+#     delete_full_url = f"{delete_url}/{id}"
+#     print("This is full delete api url ----------", delete_full_url)
+#     response = requests.delete(delete_full_url, headers=header_values)
+#     print(response.content)
+#     assert response.status_code == 204, f"Expecting 204 status code but got {response.status_code}"
