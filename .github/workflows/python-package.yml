@@ -36,7 +36,7 @@ jobs:
         run: |
           pytest gorest_apis.py
 
-robot-framework-tests:
+  robot-framework-tests:
     name: Robot Framework Tests
     timeout-minutes: 600
     runs-on: ubuntu-latest
@@ -44,15 +44,7 @@ robot-framework-tests:
       fail-fast: false
       matrix:
         include:
-          - container: 'ppodgorsek/robot-framework'
             browser: 'chrome'
-
-    container:
-      image: ${{ matrix.container }}
-      options: "--entrypoint /bin/bash --user root --shm-size=2gb"
-        python-version: [ "3.10" ]
-        browser: 'chrome'
-
     env:
       BROWSER: ${{ matrix.browser }}
     steps:
@@ -63,5 +55,7 @@ robot-framework-tests:
           pip3 install selenium
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
-      - name: Test with Robot Framework
+
+      - name: Test with robot
         run: |
+          pytest SpeedTests.robot
