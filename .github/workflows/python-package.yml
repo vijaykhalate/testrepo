@@ -36,7 +36,8 @@ jobs:
         run: |
           pytest gorest_apis.py
 
-  name: Robot Framework Tests
+robot-framework-tests:
+    name: Robot Framework Tests
     timeout-minutes: 600
     runs-on: ubuntu-latest
     strategy:
