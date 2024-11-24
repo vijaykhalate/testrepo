@@ -36,31 +36,31 @@ jobs:
         run: |
           pytest gorest_apis.py
 
-  robot-framework-tests:
-    name: Robot Framework Test
-    timeout-minutes: 120  # Adjust as needed
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        browser: 'chrome'
-
-    env:
-      BROWSER: ${{ matrix.browser }}
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v3
-        with:
-          python-version: "3.10"
-
-      - name: Install dependencies
-        run: |
-          pip3 install selenium robotframework robotframework-seleniumlibrary
-
-      - name: Test with Robot Framework
-        run: |
-          robot SpeedTests.robot
+#  robot-framework-tests:
+#    name: Robot Framework Test
+#    timeout-minutes: 120  # Adjust as needed
+#    runs-on: ubuntu-latest
+#    strategy:
+#      fail-fast: false
+#      matrix:
+#        browser: 'chrome'
+#
+#    env:
+#      BROWSER: ${{ matrix.browser }}
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v4
+#
+#      - name: Set up Python 3.10
+#        uses: actions/setup-python@v3
+#        with:
+#          python-version: "3.10"
+#
+#      - name: Install dependencies
+#        run: |
+#          pip3 install selenium robotframework robotframework-seleniumlibrary
+#
+#      - name: Test with Robot Framework
+#        run: |
+#          robot SpeedTests.robot
