@@ -8,8 +8,7 @@ on:
     - cron: '* * * * *'
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+
 
 jobs:
   build:
@@ -43,17 +42,8 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - container: 'ppodgorsek/robot-framework'
             browser: 'chrome'
 
-    container:
-      image: ${{ matrix.container }}
-      options: "--entrypoint /bin/bash --user root --shm-size=2gb"
-        python-version: [ "3.10" ]
-        browser: 'chrome'
-
-    env:
-      BROWSER: ${{ matrix.browser }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -62,5 +52,6 @@ jobs:
           pip3 install selenium
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
-      - name: Test with Robot Framework
+      - name: Test with pytest
         run: |
+          robot SpeedTests.robot
