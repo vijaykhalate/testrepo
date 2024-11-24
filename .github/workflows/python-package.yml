@@ -35,7 +35,8 @@ jobs:
         run: |
           pytest gorest_apis.py
 
-  name: Robot Framework Tests
+  robot-framework-test:
+    name: robot framework test
     timeout-minutes: 600
     runs-on: ubuntu-latest
     strategy:
@@ -43,15 +44,15 @@ jobs:
       matrix:
         include:
             browser: 'chrome'
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install dependencies
         run: |
           pip3 install selenium
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
+          
       - name: Test with pytest
         run: |
           robot SpeedTests.robot
