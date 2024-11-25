@@ -69,15 +69,17 @@ jobs:
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
 
-      # Set up ChromeDriver and start Chrome
-      - name: Set up ChromeDriver
-        uses: nanasess/setup-chromedriver@v1
-        with:
-          chrome-version: 'stable'  # Use the Chrome version installed on the runner
-
-      - name: Test with Robot Framework
+      # Set up Chrome and ChromeDriver
+      - name: Install Chrome
         run: |
-          robot SpeedTests.robot
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
+
+      - name: Set up ChromeDriver
+        uses: brownbaglunch/setup-chromedriver@v1
+        with:
+          chromedriver-version: 'latest'  # This will install the latest ChromeDriver version
+
 ## This workflow will install Python dependencies, run tests, and lint with a variety of Python versions
 ## For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 #
