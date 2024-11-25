@@ -69,20 +69,20 @@ jobs:
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
 
-      # Install Chrome
-      - name: Install Chrome
+      - name: Install Chrome and ChromeDriver on Ubuntu
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
-
-      # Download ChromeDriver compatible with installed Chrome
-      - name: Install ChromeDriver
-        run: |
           CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
           CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
           wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip -d /usr/local/bin/
           rm chromedriver_linux64.zip
+
+      - name: Test with robot
+        run: |
+          robot SpeedTests.robot
 
 
 ## This workflow will install Python dependencies, run tests, and lint with a variety of Python versions
