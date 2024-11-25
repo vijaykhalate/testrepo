@@ -54,7 +54,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v3
         with:
-          python-version: '3.x'  # specify the Python version you need
+          python-version: '3.x'
 
       - name: Install Robot Framework and dependencies
         run: |
@@ -62,22 +62,19 @@ jobs:
           pip install robotframework
           pip install robotframework-seleniumlibrary  # Required for UI testing with Selenium
 
-      - name: Install Chrome
+      - name: Install Chrome using APT
         run: |
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
 
-      - name: Install ChromeDriver
-        run: |
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
-          wget -N https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip -d /usr/local/bin/
-          rm chromedriver_linux64.zip
+      - name: Install ChromeDriver using setup-chromedriver action
+        uses: actions/setup-chromedriver@v2
+        with:
+          chrome-version: 'latest'  # Ensures ChromeDriver matches the installed Chrome version
 
       - name: Run Robot Framework UI tests
         env:
-          ROBOT_BROWSER: Chrome  # Optional: Set an environment variable if your tests reference this
+          ROBOT_BROWSER: Chrome  # Optional: Set if your tests use this variable to specify the browser
         run: |
           robot SpeedTests.robot
 
@@ -87,7 +84,6 @@ jobs:
         with:
           name: robot-results
           path: output.xml
-
 
 
 
