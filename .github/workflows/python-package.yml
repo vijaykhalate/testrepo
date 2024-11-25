@@ -61,7 +61,6 @@ jobs:
 
     env:
       BROWSER: ${{ matrix.browser }}
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
