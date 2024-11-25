@@ -69,25 +69,22 @@ jobs:
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
 
+
       - name: Install Chrome and ChromeDriver inside container
         run: |
-          # Download and install Google Chrome manually
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.rpm
+          # Download Google Chrome tarball
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.tar.gz
           
-          # Convert RPM to DEB (using alien) - you may need to install alien
-          wget http://archive.ubuntu.com/ubuntu/pool/universe/a/alien/alien_8.95_all.deb
-          dpkg -i alien_8.95_all.deb
-          alien --to-deb google-chrome-stable_current_amd64.rpm
-          dpkg -i google-chrome-stable_current_amd64.deb
-          
-          # Remove the downloaded packages to save space
-          rm google-chrome-stable_current_amd64.rpm
-          rm alien_8.95_all.deb
-          rm google-chrome-stable_current_amd64.deb
+          # Extract the tarball to /opt/google/chrome
+          mkdir -p /opt/google/chrome
+          tar -xvzf google-chrome-stable_current_amd64.tar.gz -C /opt/google/chrome
+
+          # Clean up the tarball
+          rm google-chrome-stable_current_amd64.tar.gz
 
           # Get the installed Chrome version
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          
+          CHROME_VERSION=$(ls /opt/google/chrome | grep -oP '\d+\.\d+\.\d+')
+
           # Download ChromeDriver matching the version of Chrome installed
           CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
           wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
