@@ -53,50 +53,123 @@ jobs:
             browser: 'chrome'
 
     container:
-      image: ${{ matrix.container }}
+      image: ${{matrix.container}}
       options: "--entrypoint /bin/bash --user root --shm-size=2gb"
 
     env:
-      BROWSER: ${{ matrix.browser }}
+      BROWSER: ${{matrix.browser}}
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          pip3 install selenium
-          pip3 install robotframework
-          pip3 install robotframework-seleniumlibrary
 
-      - name: Install Chrome and ChromeDriver inside container
-        run: |
-          # Download and install Google Chrome manually
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.rpm
-          
-          # Convert RPM to DEB (using alien) - you may need to install alien
-          wget http://archive.ubuntu.com/ubuntu/pool/universe/a/alien/alien_8.95_all.deb
-          dpkg -i alien_8.95_all.deb
-          alien --to-deb google-chrome-stable_current_amd64.rpm
-          dpkg -i google-chrome-stable_current_amd64.deb
-          
-          # Remove the downloaded packages to save space
-          rm google-chrome-stable_current_amd64.rpm
-          rm alien_8.95_all.deb
-          rm google-chrome-stable_current_amd64.deb
+    - name: Copy Other Robot Files
+      # Build your program with the given configuration
+      run: cp -r  ./ /opt/robotframework
 
-          # Get the installed Chrome version
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          
-          # Download ChromeDriver matching the version of Chrome installed
-          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-          unzip chromedriver_linux64.zip -d /usr/local/bin/
-          rm chromedriver_linux64.zip
+    - name: Run Test Cases
+      run: |
+        cd /
+        /opt/robotframework/bin/run-tests-in-virtual-screen.sh
+        #To increase robot threads append "ROBOT_THREADS=4" before above line.
 
-      - name: Test with robot
-        run: |
-          robot SpeedTests.robot
+    - name: Test with robot
+      run: |
+        robot SpeedTests.robot    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#    timeout-minutes: 600
+#    runs-on: ubuntu-latest
+#    strategy:
+#      matrix:
+#        include:
+#          - container: 'ppodgorsek/robot-framework'
+#            browser: 'chrome'
+#
+#    container:
+#      image: ${{ matrix.container }}
+#      options: "--entrypoint /bin/bash --user root --shm-size=2gb"
+#
+#    env:
+#      BROWSER: ${{ matrix.browser }}
+#
+#    steps:
+#      - name: Checkout repository
+#        uses: actions/checkout@v3
+#
+#      - name: Install dependencies
+#        run: |
+#          pip3 install selenium
+#          pip3 install robotframework
+#          pip3 install robotframework-seleniumlibrary
+#
+#
+#      - name: Install Chrome and ChromeDriver inside container
+#        run: |
+#          # Download Google Chrome tarball
+#          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.tar.gz
+#
+#          # Extract the tarball to /opt/google/chrome
+#          mkdir -p /opt/google/chrome
+#          tar -xvzf google-chrome-stable_current_amd64.tar.gz -C /opt/google/chrome
+#
+#          # Clean up the tarball
+#          rm google-chrome-stable_current_amd64.tar.gz
+#
+#          # Get the installed Chrome version
+#          CHROME_VERSION=$(ls /opt/google/chrome | grep -oP '\d+\.\d+\.\d+')
+#
+#          # Download ChromeDriver matching the version of Chrome installed
+#          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+#          wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
+#          unzip chromedriver_linux64.zip -d /usr/local/bin/
+#          rm chromedriver_linux64.zip
+#
+#      - name: Test with robot
+#        run: |
+#          robot SpeedTests.robot
 
 
 ## This workflow will install Python dependencies, run tests, and lint with a variety of Python versions
