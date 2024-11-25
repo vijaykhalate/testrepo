@@ -36,6 +36,12 @@ jobs:
         run: |
           pytest gorest_apis.py --junitxml=report.xml
 
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-report
+          path: report.xml  # Path to the test report
+
   robot-framework-tests:
     name: Robot Framework Tests
     timeout-minutes: 600
