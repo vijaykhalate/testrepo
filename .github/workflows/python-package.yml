@@ -34,16 +34,7 @@ jobs:
           python -m pip install requests
       - name: Test with pytest
         run: |
-
           pytest gorest_apis.py --junitxml=report.xml
-
-          - name: Upload reports
-            uses: actions/upload-artifact@v3
-            if: always()
-            with:
-              name: reports
-              # set path to results reports. Exclude dummy file that is needed because of ppodgorsek image  priviledges.
-              path: /opt/reports
 
   robot-framework-tests:
     name: Robot Framework Tests
@@ -61,6 +52,7 @@ jobs:
 
     env:
       BROWSER: ${{ matrix.browser }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -73,22 +65,6 @@ jobs:
       - name: Test with Robot Framework
         run: |
           robot SpeedTests.robot
-
-    - name: Upload reports
-      uses: actions/upload-artifact@v3
-      if: always()
-      with:
-        name: reports
-        # set path to Robot Framework results reports. Exclude dummy file that is needed because of ppodgorsek image  priviledges.
-        path: /opt/robotframework/reports
-
-
-
-
-
-
-
-
 ## This workflow will install Python dependencies, run tests, and lint with a variety of Python versions
 ## For more information, see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 #
