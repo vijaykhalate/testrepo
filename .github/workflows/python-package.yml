@@ -69,8 +69,8 @@ jobs:
 
       - name: Install ChromeDriver
         run: |
-          # Get the installed Chrome version
-          CHROME_VERSION=$(google-chrome --version | grep -oE '[0-9]+.[0-9]+')
+          # Get the installed Chrome version and trim to the major and minor version (e.g., "131.0")
+          CHROME_VERSION=$(google-chrome --version | grep -oE '^[0-9]+\.[0-9]+')
           echo "Detected Chrome version: $CHROME_VERSION"
           
           # Download the corresponding ChromeDriver version
