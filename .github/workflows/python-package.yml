@@ -71,19 +71,19 @@ jobs:
 
       - name: Install Chrome and ChromeDriver inside container
         run: |
-          # Download and install Google Chrome
+          # Download Google Chrome .deb package and extract it manually
           wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          dpkg -i google-chrome-stable_current_amd64.deb || apt-get -y --fix-broken install
+          mkdir -p /tmp/chrome-install
+          dpkg-deb -x google-chrome-stable_current_amd64.deb /tmp/chrome-install
+          mv /tmp/chrome-install/opt/google/chrome /opt/google/chrome
+          rm google-chrome-stable_current_amd64.deb
 
-          # Get the installed Chrome version
-          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-          
-          # Download the compatible ChromeDriver
+          # Download ChromeDriver matching the version of Chrome installed
+          CHROME_VERSION=$(ls /opt/google/chrome | grep -oP '\d+\.\d+\.\d+')
           CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
           wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip -d /usr/local/bin/
           rm chromedriver_linux64.zip
-
 
       - name: Test with robot
         run: |
