@@ -46,58 +46,47 @@ jobs:
     name: Robot Framework Tests
     timeout-minutes: 600
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - container: 'ppodgorsek/robot-framework'
-            browser: 'chrome'
-
-    container:
-      image: ${{ matrix.container }}
-      options: "--entrypoint /bin/bash --user root --shm-size=2gb"
-
-    env:
-      BROWSER: ${{ matrix.browser }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          pip3 install selenium
-          pip3 install robotframework
-          pip3 install robotframework-seleniumlibrary
-          # Install necessary dependencies for Chrome
-          apt-get update && apt-get install -y \
-            wget \
-            curl \
-            unzip \
-            libnss3 \
-            libgconf-2-4 \
-            libxi6 \
-            libxcomposite1 \
-            libxrandr2 \
-            libgdk-pixbuf2.0-0 \
-            libxss1 \
-            libappindicator3-1 \
-            libasound2 \
-            libgtk-3-0 \
-            chromium-browser
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'  # specify the Python version you need
 
-      - name: Install chromedriver
+      - name: Install Robot Framework and dependencies
         run: |
-          # Install ChromeDriver matching the Chrome version
-          CHROME_VERSION=$(google-chrome-stable --version | sed 's/[^0-9]*\([0-9]*\.[0-9]*\.[0-9]*\)\..*/\1/')
-          wget https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          mv chromedriver /usr/local/bin/chromedriver
-          chmod +x /usr/local/bin/chromedriver
+          python -m pip install --upgrade pip
+          pip install robotframework
+          pip install robotframework-seleniumlibrary  # Required for UI testing with Selenium
 
-      - name: Test with Robot Framework
+      - name: Install Chrome
         run: |
-          robot --variable BROWSER:${{ matrix.browser }} SpeedTests.robot
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
+      - name: Install ChromeDriver
+        run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          CHROMEDRIVER_VERSION=$(curl -sS chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION)
+          wget -N https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip -d /usr/local/bin/
+          rm chromedriver_linux64.zip
+
+      - name: Run Robot Framework UI tests
+        env:
+          ROBOT_BROWSER: Chrome  # Optional: Set an environment variable if your tests reference this
+        run: |
+          robot SpeedTests.robot
+
+      - name: Upload Robot Framework results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: robot-results
+          path: output.xml
 
 
 
