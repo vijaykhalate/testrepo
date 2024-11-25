@@ -71,15 +71,24 @@ jobs:
 
       - name: Install Chrome and ChromeDriver inside container
         run: |
-          # Download Google Chrome .deb package and extract it manually
-          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-          mkdir -p /tmp/chrome-install
-          dpkg-deb -x google-chrome-stable_current_amd64.deb /tmp/chrome-install
-          mv /tmp/chrome-install/opt/google/chrome /opt/google/chrome
+          # Download and install Google Chrome manually
+          wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.rpm
+          
+          # Convert RPM to DEB (using alien) - you may need to install alien
+          wget http://archive.ubuntu.com/ubuntu/pool/universe/a/alien/alien_8.95_all.deb
+          dpkg -i alien_8.95_all.deb
+          alien --to-deb google-chrome-stable_current_amd64.rpm
+          dpkg -i google-chrome-stable_current_amd64.deb
+          
+          # Remove the downloaded packages to save space
+          rm google-chrome-stable_current_amd64.rpm
+          rm alien_8.95_all.deb
           rm google-chrome-stable_current_amd64.deb
 
+          # Get the installed Chrome version
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          
           # Download ChromeDriver matching the version of Chrome installed
-          CHROME_VERSION=$(ls /opt/google/chrome | grep -oP '\d+\.\d+\.\d+')
           CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
           wget "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
           unzip chromedriver_linux64.zip -d /usr/local/bin/
