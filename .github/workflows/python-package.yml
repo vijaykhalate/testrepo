@@ -68,9 +68,35 @@ jobs:
           pip3 install selenium
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
+          # Install necessary dependencies for Chrome
+          apt-get update && apt-get install -y \
+            wget \
+            curl \
+            unzip \
+            libnss3 \
+            libgconf-2-4 \
+            libxi6 \
+            libxcomposite1 \
+            libxrandr2 \
+            libgdk-pixbuf2.0-0 \
+            libxss1 \
+            libappindicator3-1 \
+            libasound2 \
+            libgtk-3-0 \
+            chromium-browser
+
+      - name: Install chromedriver
+        run: |
+          # Install ChromeDriver matching the Chrome version
+          CHROME_VERSION=$(google-chrome-stable --version | sed 's/[^0-9]*\([0-9]*\.[0-9]*\.[0-9]*\)\..*/\1/')
+          wget https://chromedriver.storage.googleapis.com/113.0.5672.63/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          mv chromedriver /usr/local/bin/chromedriver
+          chmod +x /usr/local/bin/chromedriver
+
       - name: Test with Robot Framework
         run: |
-          robot SpeedTests.robot
+          robot --variable BROWSER:${{ matrix.browser }} SpeedTests.robot
 
 
 
