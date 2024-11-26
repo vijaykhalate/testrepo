@@ -69,17 +69,27 @@ jobs:
 
       - name: Install ChromeDriver
         run: |
-          # Get the installed Chrome version and trim to the major and minor version (e.g., "131.0")
+          # Get the installed Chrome version and extract major and minor versions only (e.g., "131.0")
           CHROME_VERSION=$(google-chrome --version | grep -oE '^[0-9]+\.[0-9]+')
           echo "Detected Chrome version: $CHROME_VERSION"
           
-          # Download the corresponding ChromeDriver version
+          if [ -z "$CHROME_VERSION" ]; then
+            echo "Failed to detect Chrome version."
+            exit 1
+          fi
+          
+          # Fetch the compatible ChromeDriver version
           CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
           echo "Detected ChromeDriver version: $CHROMEDRIVER_VERSION"
           
+          if [ -z "$CHROMEDRIVER_VERSION" ]; then
+            echo "Failed to fetch ChromeDriver version for Chrome $CHROME_VERSION."
+            exit 1
+          fi
+          
           # Download and install ChromeDriver
           wget -N "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" || exit 1
-          unzip chromedriver_linux64.zip -d /usr/local/bin/
+          unzip chromedriver_linux64.zip -d /usr/local/bin/ || exit 1
           rm chromedriver_linux64.zip
 
       - name: Run Robot Framework UI tests
