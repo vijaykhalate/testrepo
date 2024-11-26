@@ -52,6 +52,13 @@ jobs:
         with:
           python-version: '3.x'
 
+      - name: Install dependencies
+        run: |
+          pip3 install selenium
+          pip3 install robotframework
+          pip3 install robotframework-seleniumlibrary
+          
+
       - name: Install ChromeDriver matching installed Chrome version
         run: |
           # Display full Chrome version output for debugging
@@ -89,6 +96,7 @@ jobs:
           wget -N "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" || exit 1
           unzip chromedriver_linux64.zip -d /usr/local/bin/ || exit 1
           rm chromedriver_linux64.zip
+
       - name: Run Robot Framework UI tests
         env:
           ROBOT_BROWSER: Chrome
