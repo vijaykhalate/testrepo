@@ -69,9 +69,13 @@ jobs:
 
       - name: Install ChromeDriver
         run: |
-          # Get the installed Chrome version and extract major and minor versions only (e.g., "131.0")
-          CHROME_VERSION=$(google-chrome --version | grep -oE '^[0-9]+\.[0-9]+')
-          echo "Detected Chrome version: $CHROME_VERSION"
+          # Display full Chrome version output for debugging
+          FULL_CHROME_VERSION=$(google-chrome --version)
+          echo "Full Chrome version output: $FULL_CHROME_VERSION"
+
+          # Extract the major.minor version
+          CHROME_VERSION=$(echo "$FULL_CHROME_VERSION" | grep -oE '[0-9]+\.[0-9]+')
+          echo "Detected Chrome major.minor version: $CHROME_VERSION"
           
           if [ -z "$CHROME_VERSION" ]; then
             echo "Failed to detect Chrome version."
