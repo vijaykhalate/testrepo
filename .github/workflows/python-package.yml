@@ -52,40 +52,23 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Install Robot Framework and dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install robotframework
-          pip install robotframework-seleniumlibrary
-
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-
       - name: Install ChromeDriver
         run: |
           # Display full Chrome version output for debugging
           FULL_CHROME_VERSION=$(google-chrome --version)
           echo "Full Chrome version output: '$FULL_CHROME_VERSION'"
           
-          # Extract the major.minor version, and ensure only the first match is captured
+          # Attempt to get a matching ChromeDriver version
           CHROME_VERSION=$(echo "$FULL_CHROME_VERSION" | grep -oP '(\d+\.\d+)' | head -n 1)
-          echo "Detected Chrome major.minor version: '$CHROME_VERSION'"
-          
-          if [ -z "$CHROME_VERSION" ]; then
-            echo "Failed to detect Chrome version."
-            exit 1
-          fi
-          
-          # Fetch the compatible ChromeDriver version
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-          echo "Detected ChromeDriver version: $CHROMEDRIVER_VERSION"
-          
+          CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+
+          # Check if a matching ChromeDriver version was found
           if [ -z "$CHROMEDRIVER_VERSION" ]; then
-            echo "Failed to fetch ChromeDriver version for Chrome $CHROME_VERSION."
-            exit 1
+            echo "No exact ChromeDriver match found for Chrome version $CHROME_VERSION, using latest ChromeDriver version instead."
+            CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
           fi
+
+          echo "Installing ChromeDriver version: $CHROMEDRIVER_VERSION"
           
           # Download and install ChromeDriver
           wget -N "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" || exit 1
