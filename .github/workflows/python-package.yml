@@ -67,12 +67,11 @@ jobs:
         run: |
           # Display full Chrome version output for debugging
           FULL_CHROME_VERSION=$(google-chrome --version)
-          echo "Full Chrome version output: $FULL_CHROME_VERSION"
-
-          # Extract the major.minor version, take the first match only, and trim any whitespace
-          CHROME_VERSION=$(echo "$FULL_CHROME_VERSION" | grep -oE '^[0-9]+\.[0-9]+' | head -n 1)
-          CHROME_VERSION=$(echo "$CHROME_VERSION" | tr -d '[:space:]')
-          echo "Detected Chrome major.minor version: $CHROME_VERSION"
+          echo "Full Chrome version output: '$FULL_CHROME_VERSION'"
+          
+          # Extract the major.minor version, and ensure only the first match is captured
+          CHROME_VERSION=$(echo "$FULL_CHROME_VERSION" | grep -oP '(\d+\.\d+)' | head -n 1)
+          echo "Detected Chrome major.minor version: '$CHROME_VERSION'"
           
           if [ -z "$CHROME_VERSION" ]; then
             echo "Failed to detect Chrome version."
