@@ -41,74 +41,76 @@ jobs:
   robot-framework-tests:
     name: Robot Framework Tests
     timeout-minutes: 600
-    runs-on: ubuntu-latest
+  runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+  steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
 
-      - name: Install dependencies
-        run: |
-          pip3 install selenium
-          pip3 install robotframework
-          pip3 install robotframework-seleniumlibrary
-          
+    - name: Install Robot Framework and dependencies
+      run: |
+        pip install --upgrade pip
+        pip install robotframework
+        pip install robotframework-seleniumlibrary  # Install Selenium Library if UI tests require it
 
-      - name: Install ChromeDriver matching installed Chrome version
-        run: |
-          # Display full Chrome version output for debugging
-          FULL_CHROME_VERSION=$(google-chrome --version)
-          echo "Full Chrome version output: '$FULL_CHROME_VERSION'"
-          
-          # Extract the major.minor version (e.g., "131.0")
-          CHROME_MAJOR_MINOR=$(echo "$FULL_CHROME_VERSION" | grep -oP '\d+\.\d+' | head -n 1)
-          echo "Detected Chrome major.minor version: '$CHROME_MAJOR_MINOR'"
-          
-          if [ -z "$CHROME_MAJOR_MINOR" ]; then
-            echo "Failed to extract Chrome major.minor version."
-            exit 1
-          fi
-          
-          # Fetch the exact ChromeDriver version for this Chrome major.minor version
-          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_MINOR")
-          echo "Detected ChromeDriver version: $CHROMEDRIVER_VERSION"
-          
-          # Fallback to the latest ChromeDriver version if exact match is not available
-          if [[ "$CHROMEDRIVER_VERSION" == *"<Error>"* ]] || [ -z "$CHROMEDRIVER_VERSION" ]; then
-            echo "No matching ChromeDriver found for Chrome version $CHROME_MAJOR_MINOR. Using latest ChromeDriver version."
-            CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
-          fi
-          
-          # Check again if ChromeDriver version was found, exit if not
-          if [ -z "$CHROMEDRIVER_VERSION" ]; then
-            echo "Failed to retrieve a valid ChromeDriver version."
-            exit 1
-          fi
-          
-          echo "Installing ChromeDriver version: $CHROMEDRIVER_VERSION"
-          
-          # Download and install ChromeDriver
-          wget -N "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" || exit 1
-          unzip chromedriver_linux64.zip -d /usr/local/bin/ || exit 1
-          rm chromedriver_linux64.zip
+    - name: Install ChromeDriver matching installed Chrome version
+      run: |
+        # Display full Chrome version output for debugging
+        FULL_CHROME_VERSION=$(google-chrome --version)
+        echo "Full Chrome version output: '$FULL_CHROME_VERSION'"
+        
+        # Extract the major.minor version (e.g., "131.0")
+        CHROME_MAJOR_MINOR=$(echo "$FULL_CHROME_VERSION" | grep -oP '\d+\.\d+' | head -n 1)
+        echo "Detected Chrome major.minor version: '$CHROME_MAJOR_MINOR'"
+        
+        if [ -z "$CHROME_MAJOR_MINOR" ]; then
+          echo "Failed to extract Chrome major.minor version."
+          exit 1
+        fi
+        
+        # Fetch the exact ChromeDriver version for this Chrome major.minor version
+        CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_MAJOR_MINOR")
+        echo "Detected ChromeDriver version: $CHROMEDRIVER_VERSION"
+        
+        # Fallback to the latest ChromeDriver version if exact match is not available
+        if [[ "$CHROMEDRIVER_VERSION" == *"<Error>"* ]] || [ -z "$CHROMEDRIVER_VERSION" ]; then
+          echo "No matching ChromeDriver found for Chrome version $CHROME_MAJOR_MINOR. Using latest ChromeDriver version."
+          CHROMEDRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+        fi
+        
+        # Check again if ChromeDriver version was found, exit if not
+        if [ -z "$CHROMEDRIVER_VERSION" ]; then
+          echo "Failed to retrieve a valid ChromeDriver version."
+          exit 1
+        fi
+        
+        echo "Installing ChromeDriver version: $CHROMEDRIVER_VERSION"
+        
+        # Remove any existing ChromeDriver in the path
+        rm -f /usr/local/bin/chromedriver
+        
+        # Download and install ChromeDriver
+        wget -N "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" || exit 1
+        unzip chromedriver_linux64.zip -d /usr/local/bin/ || exit 1
+        rm chromedriver_linux64.zip
 
-      - name: Run Robot Framework UI tests
-        env:
-          ROBOT_BROWSER: Chrome
-        run: |
-          robot SpeedTests.robot
+    - name: Run Robot Framework UI tests
+      env:
+        ROBOT_BROWSER: Chrome
+      run: |
+        robot SpeedTests.robot
 
-      - name: Upload Robot Framework results
-        if: always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: robot-results
-          path: output.xml
+    - name: Upload Robot Framework results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: robot-results
+        path: output.xml
 
 
 
