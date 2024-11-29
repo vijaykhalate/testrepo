@@ -57,6 +57,7 @@ jobs:
           pip3 install selenium
           pip3 install robotframework
           pip3 install robotframework-seleniumlibrary
+          pip3 install -r requirenment.txt
 
 
       - name: Install ChromeDriver matching installed Chrome version
