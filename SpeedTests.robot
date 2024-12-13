@@ -5,7 +5,6 @@ Library     SeleniumLibrary
 RegTest
     ${speed}=   get selenium speed
     log to console  ${speed}
-    create webdriver   chrome   executable_path="chromedriver.exe"
     open browser    http://demowebshop.tricentis.com/register   chrome
     maximize browser window
     #sleep 3
